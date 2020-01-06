@@ -84,7 +84,7 @@ void logIpAddress(ssh_session sshSession, FILE *ipLogFile) {
     struct sockaddr_in address;
     socklen_t addressSize = sizeof(address);
 
-    getsockname(ssh_get_fd(sshSession), (struct sockaddr *) &address, &addressSize);
+    getpeername(ssh_get_fd(sshSession), (struct sockaddr *) &address, &addressSize);
 
     char ipString[INET_ADDRSTRLEN];
 
