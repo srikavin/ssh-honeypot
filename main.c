@@ -47,23 +47,23 @@ int main(int argc, char **argv) {
     ssh_bind_options_set(sshBind, SSH_BIND_OPTIONS_BINDPORT_STR, argv[1]);
     ssh_bind_options_set(sshBind, SSH_BIND_OPTIONS_RSAKEY, argv[2]);
 
+    if (ssh_bind_listen(sshBind) < 0) {
+        fprintf(stderr, "Failed to bind to port %s: %s\n", argv[1], ssh_get_error(sshBind));
+        ssh_bind_free(sshBind);
+        exit(1);
+    }
+
     while (running) {
         ssh_session sshSession = ssh_new();
 
-        if (ssh_bind_listen(sshBind) < 0) {
-            printf("Failed to bind to port %s: %s\n", argv[1], ssh_get_error(sshBind));
-            ssh_free(sshSession);
-            continue;
-        }
-
         if (ssh_bind_accept(sshBind, sshSession) != SSH_OK) {
-            printf("Failed to accept incoming connection: %s\n", ssh_get_error(sshBind));
+            fprintf(stderr, "Failed to accept incoming connection: %s\n", ssh_get_error(sshBind));
             ssh_free(sshSession);
             continue;
         }
 
         if (ssh_handle_key_exchange(sshSession) != SSH_OK) {
-            printf("Failed during key exchange: dle_key_exchange: %s\n", ssh_get_error(sshSession));
+            fprintf(stderr, "Failed during key exchange: dle_key_exchange: %s\n", ssh_get_error(sshSession));
             ssh_free(sshSession);
             continue;
         }
